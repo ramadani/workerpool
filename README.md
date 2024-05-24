@@ -7,7 +7,7 @@ The workerpool package provides a simple and efficient worker pool implementatio
 - **Callback Support**: Define and execute callback functions for each worker before they start processing a task.
 - **Result Collection**: Collect results from each task processed by the workers.
 
-##Installation
+## Installation
 To install the package, run:
 
 ```bash
