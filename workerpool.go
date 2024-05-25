@@ -4,7 +4,6 @@ import (
 	"sync"
 )
 
-// CallbackFunc defines the function signature for worker callbacks
 type CallbackFunc func(workerID int, job Job) Result
 
 // Job represents the job to be run
@@ -27,6 +26,7 @@ type WorkerPool struct {
 	results    chan Result
 	wg         sync.WaitGroup
 	callback   CallbackFunc
+	done       chan struct{}
 }
 
 // NewWorkerPool creates a new WorkerPool
@@ -36,6 +36,7 @@ func NewWorkerPool(numWorkers, numJobs int, callbackFunc CallbackFunc) *WorkerPo
 		jobs:       make(chan Job, numJobs),
 		results:    make(chan Result, numJobs),
 		callback:   callbackFunc,
+		done:       make(chan struct{}),
 	}
 }
 
@@ -45,6 +46,13 @@ func (wp *WorkerPool) Start() {
 		wp.wg.Add(1)
 		go wp.worker(w)
 	}
+
+	// Goroutine to close results channel after all jobs are done
+	go func() {
+		wp.wg.Wait()
+		close(wp.results)
+		close(wp.done)
+	}()
 }
 
 // worker function processes jobs from the jobs channel and sends results to the results channel
@@ -64,8 +72,7 @@ func (wp *WorkerPool) AddJob(job Job) {
 // Wait waits for all workers to finish
 func (wp *WorkerPool) Wait() {
 	close(wp.jobs)
-	wp.wg.Wait()
-	close(wp.results)
+	<-wp.done
 }
 
 // Results returns the results channel

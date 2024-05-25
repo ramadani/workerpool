@@ -27,39 +27,37 @@ import (
 )
 
 func main() {
-    const numJobs = 10
-    const numWorkers = 2
+	const numJobs = 10
+	const numWorkers = 2
 
-    callback := func(workerID int, job workerpool.Job) workerpool.Result {
-        fmt.Printf("Worker %d processing job %d with data: %v\n", workerID, job.ID, job.Data)
-        // Simulate processing time
-        time.Sleep(100 * time.Millisecond)
-        return workerpool.Result{JobID: job.ID, Data: job.Data, Error: nil}
-    }
+	callback := func(workerID int, job workerpool.Job) workerpool.Result {
+		fmt.Printf("Worker %d processing job %d with data: %v\n", workerID, job.ID, job.Data)
+		// Simulate processing time
+		time.Sleep(100 * time.Millisecond)
+		return workerpool.Result{JobID: job.ID, Data: job.Data, Error: nil}
+	}
 
-    wp := workerpool.NewWorkerPool(numWorkers, numJobs, callback)
+	wp := workerpool.NewWorkerPool(numWorkers, numJobs, callback)
 
-    // Start the worker pool
-    wp.Start()
+	// Start the worker pool
+	wp.Start()
 
-    // Goroutine to collect results as soon as they are available
-    go func() {
-        for result := range wp.Results() {
-            if result.Error != nil {
-                fmt.Printf("Job %d encountered error: %v\n", result.JobID, result.Error)
-            } else {
-                fmt.Printf("Job %d processed with result: %v\n", result.JobID, result.Data)
-            }
-        }
-    }()
+	// Send jobs to the jobs channel
+	for j := 1; j <= numJobs; j++ {
+		wp.AddJob(workerpool.Job{ID: j, Data: fmt.Sprintf("data %d", j)})
+	}
 
-    // Send jobs to the jobs channel
-    for j := 1; j <= numJobs; j++ {
-        wp.AddJob(workerpool.Job{ID: j, Data: fmt.Sprintf("data %d", j)})
-    }
+	// Wait for all workers to finish
+	wp.Wait()
 
-    // Wait for all workers to finish
-    wp.Wait()
+	// Collect results (if needed)
+	for result := range wp.Results() {
+		if result.Error != nil {
+			fmt.Printf("Job %d encountered error: %v\n", result.JobID, result.Error)
+		} else {
+			fmt.Printf("Job %d processed with result: %v\n", result.JobID, result.Data)
+		}
+	}
 }
 ```
 
