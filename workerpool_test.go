@@ -18,7 +18,7 @@ func TestWorkerPool(t *testing.T) {
 		return workerpool.Result{JobID: job.ID, Data: resultData, Error: nil}
 	}
 
-	wp := workerpool.NewWorkerPool(numWorkers, numJobs, callback)
+	wp := workerpool.New(numWorkers, numJobs, callback)
 	wp.Start()
 
 	expectedResults := make(map[int]string)
@@ -56,7 +56,7 @@ func TestWorkerPoolWithError(t *testing.T) {
 		return workerpool.Result{JobID: job.ID, Data: resultData, Error: nil}
 	}
 
-	wp := workerpool.NewWorkerPool(numWorkers, numJobs, callback)
+	wp := workerpool.New(numWorkers, numJobs, callback)
 	wp.Start()
 
 	for j := 1; j <= numJobs; j++ {
@@ -95,7 +95,7 @@ func TestWorkerPoolConcurrency(t *testing.T) {
 		return workerpool.Result{JobID: job.ID, Data: resultData, Error: nil}
 	}
 
-	wp := workerpool.NewWorkerPool(numWorkers, numJobs, callback)
+	wp := workerpool.New(numWorkers, numJobs, callback)
 	wp.Start()
 
 	for j := 1; j <= numJobs; j++ {

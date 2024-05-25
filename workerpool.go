@@ -29,8 +29,8 @@ type WorkerPool struct {
 	done       chan struct{}
 }
 
-// NewWorkerPool creates a new WorkerPool
-func NewWorkerPool(numWorkers, numJobs int, callbackFunc CallbackFunc) *WorkerPool {
+// New creates a new WorkerPool
+func New(numWorkers, numJobs int, callbackFunc CallbackFunc) *WorkerPool {
 	return &WorkerPool{
 		numWorkers: numWorkers,
 		jobs:       make(chan Job, numJobs),

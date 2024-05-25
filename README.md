@@ -37,7 +37,7 @@ func main() {
 		return workerpool.Result{JobID: job.ID, Data: job.Data, Error: nil}
 	}
 
-	wp := workerpool.NewWorkerPool(numWorkers, numJobs, callback)
+	wp := workerpool.New(numWorkers, numJobs, callback)
 
 	// Start the worker pool
 	wp.Start()
@@ -63,11 +63,11 @@ func main() {
 
 ## Worker Pool API
 
-### NewWorkerPool
+### New
 Creates a new worker pool.
 
 ```go
-func NewWorkerPool(numWorkers, numJobs int, callbackFunc CallbackFunc) *WorkerPool
+func New(numWorkers, numJobs int, callbackFunc CallbackFunc) *WorkerPool
 ```
 
 - `numWorkers`: Number of workers in the pool.
